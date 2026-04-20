@@ -1,42 +1,17 @@
-"""
-Configuration File for Traffic Sign Recognition System
+"""Configuration for traffic sign detection and classification."""
 
-This module contains all configurable parameters for the detection and classification pipeline.
-Modify these values to tune the system for your specific environment and use case.
-"""
+# Detector - HSV color space for blue detection
+DETECTOR_HSV_LOWER = (90, 50, 50)
+DETECTOR_HSV_UPPER = (130, 255, 255)
 
-# ============================================================================
-# DETECTOR CONFIGURATION - HSV Color Space Settings
-# ============================================================================
+DETECTOR_MIN_AREA = 500
+DETECTOR_MAX_AREA = 50000
+DETECTOR_CIRCULARITY_THRESHOLD = 0.7
 
-# HSV thresholds for blue color detection
-# OpenCV HSV: H (0-180), S (0-255), V (0-255)
-# Standard blue: H=90-130
-DETECTOR_HSV_LOWER = (90, 50, 50)      # (H_min, S_min, V_min)
-DETECTOR_HSV_UPPER = (130, 255, 255)   # (H_max, S_max, V_max)
-
-# Area filtering
-DETECTOR_MIN_AREA = 500                # Minimum contour area in pixels²
-DETECTOR_MAX_AREA = 50000              # Maximum contour area in pixels²
-
-# Circularity filtering
-# Circularity = 4π × Area / Perimeter²
-# Circle = 1.0, Square = 0.785, varied shapes = lower values
-DETECTOR_CIRCULARITY_THRESHOLD = 0.7   # Range: 0.0-1.0 (higher = stricter)
-
-# ============================================================================
-# CLASSIFIER CONFIGURATION - Template Matching Settings
-# ============================================================================
-
-# Template directory and size
+# Classifier - template matching
 CLASSIFIER_TEMPLATES_DIR = 'templates'
-CLASSIFIER_TEMPLATE_SIZE = (64, 64)    # (width, height) for resizing templates
-
-# Template confidence threshold
-# Template matching correlation values: -1.0 to 1.0
-CLASSIFIER_TEMPLATE_THRESHOLD = 0.7    # Range: 0.0-1.0 (higher = stricter)
-
-# Classification method: 'template_matching' or 'hog_features'
+CLASSIFIER_TEMPLATE_SIZE = (64, 64)
+CLASSIFIER_TEMPLATE_THRESHOLD = 0.7
 CLASSIFIER_PRIMARY_METHOD = 'template_matching'
 
 # ============================================================================

@@ -1,320 +1,67 @@
-# 🚦 Traffic Sign Recognition - Blue Circular Signs
+# Traffic Sign Detection
 
-A **classic computer vision** system for real-time detection and classification of blue circular traffic signs using **OpenCV, HSV color space, contour analysis, and template matching**.
+Detects and classifies blue circular traffic signs using HSV color space, contour analysis, and template matching with OpenCV.
 
-**Designed for:** Speed, simplicity, and educational purposes | **Tested on:** Laptop webcam | **Status:** Production-ready ✅
-
----
-
-## Table of Contents
-
-1. [✨ Features](#-features)
-2. [📋 Supported Signs](#-supported-signs)
-3. [🚀 Quick Start (5 Minutes)](#-quick-start-5-minutes)
-4. [📁 Installation Guide](#-installation-guide)
-5. [🔍 How It Works](#-how-it-works)
-6. [📊 Technical Details](#-technical-details)
-7. [⚙️ Configuration](#️-configuration)
-8. [🎮 Debug Tools](#-debug-tools)
-9. [📊 Sample Output](#-sample-output)
-10. [🛠️ Customization & Advanced Usage](#️-customization--advanced-usage)
-11. [🚨 Troubleshooting](#-troubleshooting)
-12. [📁 Project Structure](#-project-structure)
-13. [🔄 Future Enhancements](#-future-enhancements)
-14. [📄 License](#-license)
-
----
-
-## ✨ Features
-
-### 🎯 Detection
-- **HSV Color Space Masking** for robust blue color detection
-- **Contour Detection & Filtering** by circularity and area
-- **Real-time processing** at 30+ FPS on standard laptops
-- **Morphological operations** for noise reduction (closing, opening)
-
-### 🏷️ Classification
-- **Template Matching** (primary) - Normalized cross-correlation (cv2.TM_CCOEFF_NORMED)
-- **HOG Features** (framework ready) - For future SVM integration
-- **No "unknown"** - Always assigns best match with confidence score
-- **Detailed scoring** - Shows all template similarity scores
-
-### 🎨 Visualization
-- **Color-coded bounding boxes** (green/yellow/red based on confidence)
-- **Confidence scores** displayed in real-time
-- **Console logging** of all template similarity scores every 30 frames
-- **Frame capture capability** (key 'c' in real-time mode)
-- **Statistics view** (key 's' shows detection statistics)
-
-### 🛠️ Debug Tools
-Included in `tools.py` - single consolidated file with 4 integrated tools:
-- **HSV Slider** - Interactive threshold adjustment with 8 sliders
-- **Auto HSV Detector** - Auto-detect optimal HSV range by selecting region
-- **Detection Debugger** - Step-by-step visualization of detection process
-- **Template Debugger** - View template matching scores for each sign type
-
----
-
-## 📋 Supported Signs
-
-The system recognizes **4 blue circular traffic signs:**
-
-| Sign | Template | Description |
-|------|----------|-------------|
-| 🔼 **Straight** | `up.png` | Go straight arrow |
-| 🔚 **Turn Left** | `left.png` | Left turn arrow |
-| ✓ **Turn Right** | `right.png` | Right turn arrow |
-| 🅿️ **Parking** | `p.png` | Parking sign |
-
-All signs are blue circular with white/light interior designs. The system is optimized for detecting these specific sign types but can be extended to other sign types.
-
----
-
-## 🚀 Quick Start (5 Minutes)
-
-### 1️⃣ Installation (2 minutes)
-
-```bash
-# Install dependencies
-pip install -r requirements.txt
-```
-
-This installs: OpenCV 4.13.0+, NumPy 2.3.5+, scikit-image 0.26.0+, scikit-learn 1.8.0+
-
-### 2️⃣ Prepare Templates (1 minute)
-
-Create a `templates/` folder with 4 sign reference images:
-- `up.png` - Straight arrow (↑)
-- `left.png` - Left turn (←)
-- `right.png` - Right turn (→)
-- `p.png` - Parking sign (P)
-
-**Template requirements:**
-- Format: PNG, JPG, or BMP
-- Size: 64×64 pixels (system auto-resizes)
-- Content: Clean, well-cropped sign image
-- Quality: High contrast, good lighting
-
-### 3️⃣ Add Test Images (Optional)
-
-Add test images to `test_images/` folder (or just use webcam):
-- Supported formats: `.jpg`, `.png`, `.bmp`, `.tiff`
-- Any size works - system handles resizing
-
-### 4️⃣ Run the System (1 minute)
-
-```bash
-python main.py
-```
-
-**You'll see:**
-- Real-time camera feed with detected signs
-- Bounding boxes and confidence scores
-- Console output with template matching details
-
-**Controls:**
-- `q` - Quit
-- `c` - Capture frame to `captures/` folder
-- `s` - Toggle statistics display
-
----
-
-## 📁 Installation Guide
-
-### Prerequisites
-- **Python 3.8+** (tested on 3.12)
-- **Webcam** (for real-time detection) or video file
-- **pip** (Python package manager)
-
-### Step 1: Clone Repository
-
-```bash
-git clone https://github.com/yourusername/traffic-sign-detection.git
-cd traffic-sign-detection
-```
-
-### Step 2: Create Virtual Environment (Recommended)
-
-```bash
-# Create virtual environment
-python -m venv venv
-
-# Activate virtual environment
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
-```
-
-### Step 3: Install Dependencies
+## Setup
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**What gets installed:**
-- `opencv-python>=4.8.0` - Computer vision library
-- `numpy>=1.24.0` - Numerical operations
-- `scikit-image>=0.21.0` - Image processing
-- `scikit-learn>=1.3.0` - Machine learning (HOG + future SVM)
+Create `templates/` folder with 4 sign images:
+- `up.png` - Straight arrow
+- `left.png` - Left turn
+- `right.png` - Right turn
+- `p.png` - Parking sign
 
-### Step 4: Prepare Template Images
-
-Download or create template images for the 4 sign types and save them to `templates/` folder:
-
-```
-templates/
-├── up.png          # Straight arrow sign (↑)
-├── left.png        # Left turn sign (←)
-├── right.png       # Right turn sign (→)
-└── p.png           # Parking sign (P)
-```
-
-**Where to Get Templates:**
-1. Capture from real traffic signs (best quality)
-2. Download from traffic sign datasets online
-3. Use synthetic images or screenshots
-4. Standard traffic sign image databases
-
-### Step 5: Verify Installation
-
-```bash
-# Test all imports
-python -c "import cv2, numpy, sklearn, skimage; print('✓ All dependencies installed!')"
-
-# Test camera availability
-python -c "import cv2; cap = cv2.VideoCapture(0); print('✓ Camera OK' if cap.isOpened() else '✗ Camera issue')"
-```
-
-### Step 6: Run Quick Test
+## Usage
 
 ```bash
 python main.py
 ```
 
-Expected output: Real-time camera detection with signs highlighted
+Controls: `q`=quit, `c`=capture, `s`=statistics
 
----
+## How It Works
 
-## 🔍 How It Works
+1. **Detection**: HSV color masking → contour filtering by circularity → ROI extraction
+2. **Classification**: Template matching (normalized cross-correlation) against all 4 templates
+3. **Output**: Bounding boxes with confidence scores
 
-### 3-Step Pipeline
+## Project Structure
 
 ```
-Camera Frame
-    ↓
-[1. DETECTION]
-  ├─ Gaussian blur (noise reduction)
-  ├─ HSV color masking (blue detection)
-  ├─ Morphological operations (closing + opening)
-  ├─ Contour finding
-  ├─ Filter by circularity & area
-  └─ Extract ROI (Region of Interest) with padding
-    ↓
-[2. CLASSIFICATION]
-  ├─ Resize ROI to 64×64
-  ├─ Template matching (cv2.TM_CCOEFF_NORMED)
-  ├─ Compare with all 4 templates
-  └─ Return best match + confidence scores
-    ↓
-[3. VISUALIZATION]
-  ├─ Draw bounding box (color based on confidence)
-  ├─ Add label + confidence percentage
-  ├─ Display on frame
-  └─ Log to console (every 30 frames)
-    ↓
-Output Frame
+├── main.py           - Entry point
+├── config.py         - Parameters (HSV ranges, thresholds)
+├── tools.py          - Debug tools (HSV tuning, detection debugging)
+├── core/
+│   ├── detector.py   - Sign detection (HSV + contour analysis)
+│   └── classifier.py - Sign classification (template matching)
+├── templates/        - Reference sign images (64×64)
+├── captures/         - Saved frames
+└── test_images/      - Test images (optional)
 ```
 
-### Key Algorithms
+## Debug Tools
 
-**Color Detection: HSV Space**
-```
-Why HSV? More robust than RGB for lighting-independent color detection
-Hue: 90-130        (Blue color range in OpenCV HSV: 0-180 scale)
-Saturation: 50-255 (Color intensity/purity)
-Value: 50-255      (Brightness level)
-```
-
-**Shape Filtering: Circularity**
-```
-Formula: Circularity = 4π × Area / Perimeter²
-Range: 0.0 - 1.0 (closer to 1.0 = more perfectly circular)
-Default threshold: 0.7 (filters for circular shapes)
-Advantage: Identifies circular signs while rejecting rectangular/irregular shapes
+```bash
+python tools.py hsv_slider      # Adjust HSV with sliders
+python tools.py auto_hsv        # Auto-detect HSV range
+python tools.py detection_debug # Step-by-step detection
+python tools.py template_debug  # Template matching scores
 ```
 
-**Classification: Template Matching**
-```
-Method: cv2.TM_CCOEFF_NORMED (normalized cross-correlation)
-Process:
-  1. Resize detected ROI to template size (64×64)
-  2. Compute correlation with each of 4 templates
-  3. Return similarity scores (0.0 - 1.0)
-  4. Best match = highest score
+## Configuration
 
-Advantages: Fast, deterministic, no training required
-Limitations: Sensitive to scale, rotation, and occlusion
-```
+Edit `config.py` to tune parameters:
+- HSV thresholds for blue detection
+- Min/max contour area
+- Circularity threshold (shape filtering)
+- Template matching confidence threshold
 
----
+## License
 
-## 📊 Technical Details
-
-### Detection Implementation (`core/detector.py` - 250+ lines)
-
-**Key Methods:**
-```python
-# Preprocessing
-def preprocess(image) → HSV_image
-  - Gaussian blur (5×5 kernel, σ=1.0)
-  - Color space conversion: BGR → HSV
-
-# Color masking
-def create_blue_mask(hsv_image) → binary_mask
-  - Thresholding: inRange(hsv_image, lower, upper)
-  - Morphological closing (5×5 ellipse kernel)
-  - Morphological opening (5×5 ellipse kernel)
-
-# Shape filtering
-def calculate_circularity(contour) → float (0.0 - 1.0)
-  - Formula: 4π × contourArea / contourPerimeter²
-
-# Main pipeline
-def detect_signs(image) → list[(roi_image, bounding_box)]
-  - Preprocess input image
-  - Create color mask
-  - Find contours
-  - Filter by circularity and area
-  - Extract ROIs with padding
-  - Return list of regions for classification
-```
-
-### Classifier Implementation (`core/classifier.py` - 270+ lines)
-
-**Key Methods:**
-```python
-# Template management
-def load_templates(templates_dir) → dict
-  - Loads 4 templates: up.png, left.png, right.png, p.png
-  - Resizes all to 64×64 pixels
-  - Returns mapping: sign_name → template_image
-
-# Primary classification
-def template_matching(roi_image) → (best_match, confidence, all_scores)
-  - Resize ROI to 64×64
-  - Compute cv2.TM_CCOEFF_NORMED with each template
-  - Returns best match and all 4 similarity scores
-
-def classify_verbose(roi_image) → (sign_type, confidence, scores_dict)
-  - Enhanced version returning detailed scores
-  - Used for console logging and analysis
-
-# ML features (framework ready)
-def extract_hog_features(roi_image) → feature_vector
-  - HOG descriptor with 8×8 cells, 16×16 blocks, 9 bins
-  - Returns as numpy array for ML pipeline
-```
+MIT
 
 ---
 

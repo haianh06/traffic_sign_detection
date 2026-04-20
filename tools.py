@@ -1,16 +1,4 @@
-"""
-Debug and Utility Tools for Traffic Sign Recognition
-
-This module contains all debug and tuning tools:
-1. HSV Slider Tool - Adjust HSV ranges with sliders
-2. Auto HSV Detector - Auto-detect optimal HSV range from blue sign
-3. Detection Debugger - Step-by-step detection visualization
-4. Template Matching Debugger - Shows template comparison scores
-
-Run with: python tools.py <tool_name>
-Available tools: hsv_slider, auto_hsv, detection_debug, template_debug
-"""
-
+"""Debug and utility tools for tuning detection parameters."""
 import cv2
 import numpy as np
 import sys
@@ -19,10 +7,6 @@ from pathlib import Path
 from core.detector import SignDetector
 from core.classifier import SignClassifier
 
-
-# ============================================================================
-# 1. HSV RANGE SLIDER TOOL
-# ============================================================================
 
 class HSVSliderTool:
     """Interactive HSV range adjustment with real-time visualization."""
@@ -38,22 +22,16 @@ class HSVSliderTool:
         self.circ_threshold = 0.7
     
     def nothing(self, x):
-        """Dummy callback for trackbars."""
         pass
     
     def run(self):
-        """Run the slider tool."""
         cap = cv2.VideoCapture(0)
-        
         if not cap.isOpened():
-            print("❌ Cannot open camera!")
+            print("Cannot open camera!")
             return
         
-        print("="*70)
-        print("🎚️  HSV RANGE SLIDER TOOL")
-        print("="*70)
-        print("\n📊 Adjust sliders until blue sign shows WHITE in left window")
-        print("="*70 + "\n")
+        print("HSV RANGE SLIDER TOOL")
+        print("Adjust sliders until blue sign shows WHITE in left window\n")
         
         cv2.namedWindow('HSV Range Sliders')
         
@@ -75,7 +53,6 @@ class HSVSliderTool:
             
             frame = cv2.resize(frame, (960, 720))
             
-            # Get slider values
             self.h_lower = cv2.getTrackbarPos('H_MIN', 'HSV Range Sliders')
             self.h_upper = cv2.getTrackbarPos('H_MAX', 'HSV Range Sliders')
             self.s_lower = cv2.getTrackbarPos('S_MIN', 'HSV Range Sliders')
@@ -85,13 +62,10 @@ class HSVSliderTool:
             self.min_area = cv2.getTrackbarPos('MIN_AREA', 'HSV Range Sliders')
             self.circ_threshold = cv2.getTrackbarPos('CIRC_x100', 'HSV Range Sliders') / 100.0
             
-            # Update detector
             detector.hsv_lower = np.array([self.h_lower, self.s_lower, self.v_lower], dtype=np.uint8)
             detector.hsv_upper = np.array([self.h_upper, self.s_upper, self.v_upper], dtype=np.uint8)
             detector.min_area = self.min_area
             detector.circularity_threshold = self.circ_threshold
-            
-            # Process
             blurred = cv2.GaussianBlur(frame, (5, 5), 0)
             hsv = cv2.cvtColor(blurred, cv2.COLOR_BGR2HSV)
             mask = cv2.inRange(hsv, detector.hsv_lower, detector.hsv_upper)
@@ -140,24 +114,17 @@ class HSVSliderTool:
             if key == ord('q'):
                 break
             elif key == ord('s'):
-                print(f"\n✓ Current values:")
+                print(f"\nCurrent values:")
                 print(f"  DETECTOR_HSV_LOWER = ({self.h_lower}, {self.s_lower}, {self.v_lower})")
                 print(f"  DETECTOR_HSV_UPPER = ({self.h_upper}, {self.s_upper}, {self.v_upper})")
                 print(f"  DETECTOR_MIN_AREA = {self.min_area}")
                 print(f"  DETECTOR_CIRCULARITY_THRESHOLD = {self.circ_threshold}")
-                print(f"\nCopy these to config.py")
-                input("Press ENTER to continue...")
+                print(f"Copy these to config.py\n")
         
-        cap.release()
-        cv2.destroyAllWindows()
 
-
-# ============================================================================
-# 2. AUTO HSV DETECTOR
-# ============================================================================
 
 class AutoHSVDetector:
-    """Automatically detect optimal HSV range."""
+    """Auto-detect optimal HSV range from selected region."""
     
     def __init__(self):
         self.frame = None
@@ -166,7 +133,6 @@ class AutoHSVDetector:
         self.roi_points = []
         
     def mouse_callback(self, event, x, y, flags, param):
-        """Draw rectangle by dragging."""
         if event == cv2.EVENT_LBUTTONDOWN:
             self.roi_points = [(x, y)]
         elif event == cv2.EVENT_MOUSEMOVE and flags == cv2.EVENT_FLAG_LBUTTON:
@@ -207,21 +173,16 @@ class AutoHSVDetector:
         print("="*70 + "\n")
     
     def run(self):
-        """Run the auto-detector."""
         cap = cv2.VideoCapture(0)
-        
         if not cap.isOpened():
-            print("❌ Cannot open camera!")
+            print("Cannot open camera!")
             return
         
-        print("="*70)
-        print("🎯 AUTO HSV RANGE DETECTOR")
-        print("="*70)
-        print("\n📌 INSTRUCTIONS:")
+        print("\nAUTO HSV RANGE DETECTOR")
+        print("INSTRUCTIONS:")
         print("  1. DRAG to select BLUE SIGN region")
         print("  2. Release mouse")
-        print("  3. Press SPACE to analyze")
-        print("="*70 + "\n")
+        print("  3. Press SPACE to analyze\n")
         
         cv2.namedWindow('Auto HSV Detector')
         cv2.setMouseCallback('Auto HSV Detector', self.mouse_callback)
@@ -254,13 +215,7 @@ class AutoHSVDetector:
                 if self.selected_region:
                     self.analyze_region()
         
-        cap.release()
-        cv2.destroyAllWindows()
 
-
-# ============================================================================
-# 3. DETECTION DEBUGGER
-# ============================================================================
 
 class DetectionDebugger:
     """Debug detection process step-by-step."""
@@ -269,19 +224,14 @@ class DetectionDebugger:
         self.detector = SignDetector()
     
     def run(self):
-        """Run detection debug."""
         cap = cv2.VideoCapture(0)
-        
         if not cap.isOpened():
-            print("❌ Cannot open camera!")
+            print("Cannot open camera!")
             return
         
-        print("\n" + "="*70)
-        print("🔍 DETECTION DEBUGGER")
-        print("="*70)
-        print("\n  'SPACE': Show detection details")
-        print("  'q': Quit")
-        print("="*70 + "\n")
+        print("\nDETECTION DEBUGGER")
+        print("  SPACE: Show detection details")
+        print("  q: Quit\n")
         
         while True:
             ret, frame = cap.read()
@@ -317,9 +267,6 @@ class DetectionDebugger:
         cv2.destroyAllWindows()
 
 
-# ============================================================================
-# 4. TEMPLATE MATCHING DEBUGGER
-# ============================================================================
 
 class TemplateMatchingDebugger:
     """Debug template matching visualization."""
@@ -387,18 +334,13 @@ class TemplateMatchingDebugger:
 # ============================================================================
 
 def print_help():
-    """Print help message."""
-    print("\n" + "="*70)
-    print("Traffic Sign Detection - Debug Tools")
-    print("="*70)
+    print("\nTraffic Sign Detection - Debug Tools")
     print("\nUsage: python tools.py <tool_name>")
     print("\nAvailable tools:")
-    print("  1. hsv_slider      - Adjust HSV ranges with interactive sliders")
-    print("  2. auto_hsv        - Auto-detect optimal HSV range by selecting region")
-    print("  3. detection_debug - Debug detection process step-by-step")
-    print("  4. template_debug  - Debug template matching scores")
-    print("\nExample: python tools.py hsv_slider")
-    print("="*70 + "\n")
+    print("  hsv_slider      - Adjust HSV ranges with interactive sliders")
+    print("  auto_hsv        - Auto-detect optimal HSV range")
+    print("  detection_debug - Debug detection process")
+    print("  template_debug  - Debug template matching\n")
 
 
 if __name__ == '__main__':
